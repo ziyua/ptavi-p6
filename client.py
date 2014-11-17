@@ -11,6 +11,7 @@ import sys
 # Cliente UDP simple.
 user_data = sys.argv
 method_list = ['INVITE', 'BYE']
+lista_ack = ['SIP/2.0', '100', 'Trying', 'SIP/2.0', '180', 'Ring', 'SIP/2.0', '200', 'OK']
 
 if len(user_data) != 3:
     print "Usage: python client.py method receiver@IP:SIPport"
@@ -54,8 +55,13 @@ except socket.error:
     raise SystemExit
 
 print data
-if data.split()[0] == 'ACK':
-    print "Asentido"
+
+if data.split() == lista_ack:
+    LINE = 'ACK sip:' + RECEPTOR + '@' + IP + " " + VER
+    print "Enviando: " + LINE
+    my_socket.send(LINE + '\r\n')
+    data2 = my_socket.recv(1024)
+    print data2
 print "Terminando socket..."
 
 
