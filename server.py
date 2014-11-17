@@ -47,7 +47,7 @@ class SIPHandler(SocketServer.DatagramRequestHandler):
                     to_exe = './mp32rtp -i 127.0.0.1 -p 23032 < ' + AUDIO_FILE
                     os.system(to_exe)
                 else:
-					self.wfile.write("SIP/2.0 405 Method Not Allowed")
+					self.wfile.write("SIP/2.0 405 Method Not Allowed\r\n\r\n")
 
             # Si no hay más líneas salimos del bucle infinito
             else:
