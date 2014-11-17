@@ -36,12 +36,16 @@ class SIPHandler(SocketServer.DatagramRequestHandler):
                 if list_words[0] == 'INVITE':
                     correo = list_words[1]
                     correo = correo.split(":")[1]
-                    trying = "SIP/2.0 100 Trying\r\n\r\n"
-                    ring = "SIP/2.0 180 Ring\r\n\r\n"
-                    twhd_ok = "SIP/2.0 200 OK\r\n\r\n"
-                    self.wfile.write(trying)
-                    self.wfile.write(ring)
-                    self.wfile.write(twhd_ok)
+                    resp = "SIP/2.0 100 Trying\r\n\r\n"
+                    resp = resp + "SIP/2.0 180 Ring\r\n\r\n"
+                    resp = resp + "SIP/2.0 200 OK\r\n\r\n"
+                    self.wfile.write(resp)
+                elif list_words[0] == 'BYE':
+					self.wfile.write("SIP/2.0 200 OK\r\n\r\n")
+                elif list_words[0] == "ACK":
+					self.wfile.write("SIP/2.0 200 OK\r\n\r\n")
+                else:
+					self.wfile.write("SIP/2.0 405 Method Not Allowed")
 
             # Si no hay más líneas salimos del bucle infinito
             else:
