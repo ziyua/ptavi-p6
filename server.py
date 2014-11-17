@@ -6,6 +6,7 @@ Clase (y programa principal) para un servidor de eco en UDP simple
 """
 
 import SocketServer
+import os
 import sys
 
 SERVER_DATA = sys.argv
@@ -35,10 +36,12 @@ class SIPHandler(SocketServer.DatagramRequestHandler):
                 if list_words[0] == 'INVITE':
                     correo = list_words[1]
                     correo = correo.split(":")[1]
-                    resp = "SIP/2.0 100 Trying\r\n\r\n"
-                    resp = resp + "SIP/2.0 180 Ring\r\n\r\n"
-                    resp = resp + "SIP/2.0 200 OK\r\n\r\n"
-                    self.wfile.write(resp)
+                    trying = "SIP/2.0 100 Trying\r\n\r\n"
+                    ring = "SIP/2.0 180 Ring\r\n\r\n"
+                    twhd_ok = "SIP/2.0 200 OK\r\n\r\n"
+                    self.wfile.write(trying)
+                    self.wfile.write(ring)
+                    self.wfile.write(twhd_ok)
 
             # Si no hay más líneas salimos del bucle infinito
             else:
@@ -47,5 +50,5 @@ class SIPHandler(SocketServer.DatagramRequestHandler):
 if __name__ == "__main__":
     # Creamos servidor de eco y escuchamos
     serv = SocketServer.UDPServer((IP, PORT), SIPHandler)
-    print "Lanzando servidor UDP de SIP..."
+    print "Listening..."
     serv.serve_forever()
