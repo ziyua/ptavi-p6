@@ -43,7 +43,9 @@ class SIPHandler(SocketServer.DatagramRequestHandler):
                 elif list_words[0] == 'BYE':
 					self.wfile.write("SIP/2.0 200 OK\r\n\r\n")
                 elif list_words[0] == "ACK":
-					self.wfile.write("SIP/2.0 200 OK\r\n\r\n")
+                    os.system('chmod 755 mp32rtp')
+                    to_exe = './mp32rtp -i 127.0.0.1 -p 23032 < ' + AUDIO_FILE
+                    os.system(to_exe)
                 else:
 					self.wfile.write("SIP/2.0 405 Method Not Allowed")
 
