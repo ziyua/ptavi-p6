@@ -42,14 +42,14 @@ class EchoHandler(SocketServer.DatagramRequestHandler):
                     # sdp = 'm=audio ' + str(self.PORT_RTP) + \
                     #       ' RTP/AVP 8 101\r\n'
                     # self.send_single('SIP/2.0 200 OK\r\n' + sdp + '\r\n')
-                    self.send_single('SIP/2.0 200 OK\r\n\r\n')
+                    self.wfile.write('SIP/2.0 200 OK\r\n\r\n')
                 elif line.split()[0] == 'ACK':
                     # ACK client 5065 -> servidor 5060
                     # RTP servidor 5010 --> client 12440 (random)
                     ip = self.client_address[0]
                     aEjecutar = './mp32rtp -i ' + ip + ' -p ' \
                                 + '23032 < ' + sys.argv[3]
-                    #            + str(self.PORT_RTP) + ' < ' + sys.argv[3]
+                    #           + str(self.PORT_RTP) + ' < ' + sys.argv[3]
                     print "Vamos a ejecutar $ ", aEjecutar
                     os.system(aEjecutar)  # otro task mejor
                     # client espera 5 seg.
@@ -57,13 +57,13 @@ class EchoHandler(SocketServer.DatagramRequestHandler):
                 elif line.split()[0] == 'BYE':
                     # Solo Send 200 OK
                     # BYE: client 5065 -> servidor 5060
-                    self.send_single('SIP/2.0 200 OK\r\n\r\n')
+                    self.wfile.write('SIP/2.0 200 OK\r\n\r\n')
                 else:
                     # YES -> INVITE|ACK|BYE   NOT -> CANCEL|OPTIONS|REGISTER
-                    self.send_single('SIP/2.0 405 Method Not Allowed\r\n\r\n')
+                    self.wfile.write('SIP/2.0 405 Method Not Allowed\r\n\r\n')
             elif line:
                 # bad msg:
-                self.send_single('SIP/2.0 400 Bad Request\r\n\r\n')
+                self.wfile.write('SIP/2.0 400 Bad Request\r\n\r\n')
             else:
                 break
 
