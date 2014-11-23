@@ -22,6 +22,8 @@ class RTPhandle(SocketServer.DatagramRequestHandler):
             print 'play data audio:', repr(data)
             if not data:
                 break
+    # Aqui send '', pues tiene [Malformed packet] de 42 byte.
+    # solo tiene header 42byte
 
 
 class SIPclient():
