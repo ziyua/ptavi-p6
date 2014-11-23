@@ -4,6 +4,7 @@
 Programa cliente que abre un socket a un servidor
 """
 
+import time
 import SocketServer
 import socket
 import sys
@@ -12,13 +13,14 @@ import re
 
 class RTPhandle(SocketServer.DatagramRequestHandler):
 
+    # Add Buffer
+
     def handle(self):
         while 1:
             data = self.rfile.read()
+            # Add data a Buffer, and play audio
             print 'play data audio:', repr(data)
-            if data and len(data) != 0:
-                RTPserv.handle_request()
-            else:
+            if not data:
                 break
 
 
@@ -66,7 +68,7 @@ class SIPclient():
             print 'Not aquì RTP, if echo ERROR', repr(data)
         # else: No correcta msg que envia por servidor.
 
-    def startRTP(self):
+    def endRecvSIP(self):
         sRTP = self.recvRTP
         self.recvRTP = False
         return sRTP
@@ -93,12 +95,17 @@ if __name__ == '__main__':
     # vamos a enviar (INVITE, jose@127.0.0.1:8000)
     mySIP.sendSIP(Method=sys.argv[1])
     mySIP.receiveSIP()
-    if mySIP.startRTP():
+    if mySIP.endRecvSIP():
         print 'Starting RTP...'
         RTPserv = SocketServer.UDPServer(("", 23032), RTPhandle)
         # exprid time 5.0 seg
         # if 5 seg not receive RTP data(no hay audio), break
         RTPserv.timeout = 5.0
-        RTPserv.handle_request()
+        while 1:
+            before = time.time()
+            RTPserv.handle_request()
+            after = time.time()
+            if after - before > RTPserv.timeout:
+                break
     # solo need close socket SIP, RTP ya termino.
     mySIP.closeSIP()
