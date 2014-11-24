@@ -8,6 +8,7 @@ Clase (y programa principal) para un servidor de eco en UDP simple
 import SocketServer
 import os
 import sys
+import socket
 
 SERVER_DATA = sys.argv
 if len(SERVER_DATA) != 4:
@@ -16,9 +17,10 @@ if len(SERVER_DATA) != 4:
 IP = SERVER_DATA[1]
 try:
     PORT = int(SERVER_DATA[2])
-except TypeError:
+except ValueError:
     print "Usage: python server.py IP port audio_file"
     raise SystemExit
+
 AUDIO_FILE = SERVER_DATA[3]
 
 class SIPHandler(SocketServer.DatagramRequestHandler):
@@ -33,6 +35,7 @@ class SIPHandler(SocketServer.DatagramRequestHandler):
             cadena = self.rfile.read()
             if cadena != "":
                 list_words = cadena.split()
+                print list_words
                 if list_words[0] == 'INVITE':
                     correo = list_words[1]
                     correo = correo.split(":")[1]
@@ -55,6 +58,10 @@ class SIPHandler(SocketServer.DatagramRequestHandler):
 
 if __name__ == "__main__":
     # Creamos servidor de eco y escuchamos
-    serv = SocketServer.UDPServer((IP, PORT), SIPHandler)
-    print "Listening..."
-    serv.serve_forever()
+    try:
+        serv = SocketServer.UDPServer((IP, PORT), SIPHandler)
+        print "Listening..."
+        serv.serve_forever()
+    except socket.gaierror:
+        print "Usage: python server.py IP port audio_file"
+        raise SystemExit
