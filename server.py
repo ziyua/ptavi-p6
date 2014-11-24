@@ -24,16 +24,17 @@ except ValueError:
     print usage
     raise SystemExit
 
-audio_file = server_data[3]
-if not os.path.exists(audio_file):
+AUDIO_FILE = server_data[3]
+if not os.path.exists(AUDIO_FILE):
     print "Audio file doesn't exist"
     print usage
     raise SystemExit
 
+
 def check_request(lista):
     # Comprueba si la petición recibida esta bien formada
     lista_ok = [3, 'SIP/2.0', 'sip', 2]
-    lista_check = [0,1,2,3]
+    lista_check = [0, 1, 2, 3]
     try:
         lista_check[0] = len(lista)
         lista_check[1] = lista[2]
@@ -46,12 +47,11 @@ def check_request(lista):
         print "500 Server Internal Error"
         return 0
 
-            
+
 class SIPHandler(SocketServer.DatagramRequestHandler):
     """
     SIP server class
     """
-
 
     def handle(self):
 
@@ -65,6 +65,7 @@ class SIPHandler(SocketServer.DatagramRequestHandler):
                     self.wfile.write("SIP/2.0 406 Not Acceptable\r\n\r\n")
                     print "Recibida petición incorrecta"
                     break
+                print 'Recibida petición: ' + cadena
                 if list_words[0] == 'INVITE':
                     correo = list_words[1]
                     correo = correo.split(":")[1]
@@ -73,14 +74,15 @@ class SIPHandler(SocketServer.DatagramRequestHandler):
                     resp = resp + "SIP/2.0 200 OK\r\n\r\n"
                     self.wfile.write(resp)
                 elif list_words[0] == 'BYE':
-					self.wfile.write("SIP/2.0 200 OK\r\n\r\n")
+                    self.wfile.write("SIP/2.0 200 OK\r\n\r\n")
                 elif list_words[0] == "ACK":
                     os.system('chmod 755 mp32rtp')
                     to_exe = './mp32rtp -i 127.0.0.1 -p 23032 < ' + audio_file
+                    print "Enviando audio..."
                     os.system(to_exe)
                 else:
-					self.wfile.write("SIP/2.0 405 Method Not Allowed\r\n\r\n")
-
+                    self.wfile.write("SIP/2.0 405 Method Not Allowed\r\n\r\n")
+                print 'Respuesta enviada.'
             # Si no hay más líneas salimos del bucle infinito
             else:
                 break
