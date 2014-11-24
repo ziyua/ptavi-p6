@@ -4,34 +4,20 @@
 Programa cliente que abre un socket a un servidor
 """
 
-import time
-import SocketServer
 import socket
 import sys
 import re
 
 
-class RTPhandle(SocketServer.DatagramRequestHandler):
-
-    # Add Buffer
-
-    def handle(self):
-        while 1:
-            data = self.rfile.read()
-            # Add data a Buffer, and play audio
-            print 'play data audio:', repr(data)
-            if not data:
-                break
-    # Aqui send '', pues tiene [Malformed packet] de 42 byte.
-    # solo tiene header 42byte
-
-
 class SIPclient():
 
     def __init__(self, Addr, User):
+        """
+        connect server SIP, socket UDP.
+        """
         self.PROTOCOL = r'^SIP/2.0\s\d{3}\s\w+'
         self.User = User
-        self.recvRTP = False
+        # self.recvRTP = False
         self.Method = ''
         # Cliente UDP simple.
         self.my_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -40,12 +26,18 @@ class SIPclient():
         self.my_socket.connect(Addr)
 
     def sendSIP(self, Method):
+        """
+        Send package SIP: INVITE sip:pep8@127.0.0.1:5060 SIP/2.0
+        """
         self.Method = Method
         LINE = Method + ' sip:' + self.User + ' SIP/2.0\r\n'
         print "Enviando: " + LINE
         self.my_socket.send(LINE + '\r\n')
 
     def receiveSIP(self, bufferSiza=1024):
+        """
+        Receive package SIP: Trying, Ring, OK
+        """
         try:
             data = self.my_socket.recv(bufferSiza)
         except socket.error:
@@ -61,21 +53,14 @@ class SIPclient():
             if Num == "200":
                 if self.Method != 'BYE':
                     self.sendSIP('ACK')
-            elif Num == "100":  # SIP/2.0 Trying 100
-                self.recvRTP = True
-                self.receiveSIP()
             else:
                 self.receiveSIP()
-        else:
-            print 'Not aquì RTP, if echo ERROR', repr(data)
         # else: No correcta msg que envia por servidor.
 
-    def endRecvSIP(self):
-        sRTP = self.recvRTP
-        self.recvRTP = False
-        return sRTP
-
     def closeSIP(self):
+        """
+        close SIP connect.
+        """
         self.my_socket.close()
         print "Fin."
 
@@ -97,17 +82,6 @@ if __name__ == '__main__':
     # vamos a enviar (INVITE, jose@127.0.0.1:8000)
     mySIP.sendSIP(Method=sys.argv[1])
     mySIP.receiveSIP()
-    if mySIP.endRecvSIP():
-        print 'Starting RTP...'
-        RTPserv = SocketServer.UDPServer(("", 23032), RTPhandle)
-        # exprid time 5.0 seg
-        # if 5 seg not receive RTP data(no hay audio), break
-        RTPserv.timeout = 5.0
-        while 1:
-            before = time.time()
-            RTPserv.handle_request()
-            after = time.time()
-            if after - before > RTPserv.timeout:
-                break
-    # solo need close socket SIP, RTP ya termino.
+    # if RTP: print 'Starting receive RTP...'
+    # RTPserv = SocketServer.UDPServer(("", 23032), RTPhandle)
     mySIP.closeSIP()
