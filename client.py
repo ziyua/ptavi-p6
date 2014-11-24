@@ -39,7 +39,6 @@ except ValueError:
 # Contenido que vamos a enviar
 LINE = METODO + " sip:" + RECEPTOR + "@" + IP + " " + VER + '\r\n\r\n'
 
-
 # Creamos el socket, lo configuramos y lo atamos a un servidor/puerto
 
 my_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -63,7 +62,6 @@ if data.split() == lista_ack:
     data2 = my_socket.recv(1024)
     print "Recibido: " + data2
 print "Terminando socket..."
-
 
 # Cerramos todo
 my_socket.close()
