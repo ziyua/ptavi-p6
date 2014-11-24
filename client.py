@@ -12,10 +12,10 @@ import sys
 user_data = sys.argv
 method_list = ['INVITE', 'BYE']
 lista_ack = ['SIP/2.0', '100', 'Trying', 'SIP/2.0', '180', 'Ringing',
-                 'SIP/2.0', '200', 'OK']
-
+             'SIP/2.0', '200', 'OK']
+usage = "Usage: python client.py method receiver@IP:SIPport"
 if len(user_data) != 3:
-    print "Usage: python client.py method receiver@IP:SIPport"
+    print usage
     raise SystemExit
 
 user_info = user_data[2].split("@")
@@ -24,7 +24,7 @@ RECEPTOR = user_info[0]
 METODO = user_data[1]
 # Comprobamos si el método es conocido
 if METODO not in method_list:
-    print "Unknown method -- Use 'INVITE' or 'BYE'"
+    print "Method error: Only can use 'INVITE' or 'BYE'"
     raise SystemExit
 
 # Dirección IP del servidor.
@@ -33,7 +33,7 @@ IP = user_info[1].split(":")[0]
 try:
     PORT = int(user_info[1].split(":")[1])
 except ValueError:
-    print "Usage: python client.py method receiver@IP:SIPport"
+    print usage
     raise SystemExit
 
 # Contenido que vamos a enviar
@@ -51,18 +51,17 @@ try:
     print "Enviando: " + LINE
     my_socket.send(LINE + '\r\n')
     data = my_socket.recv(1024)
+    print "Recibido: " + data
 except socket.error:
     print "Error: No server listening at " + IP + " port " + str(PORT)
     raise SystemExit
-
-print data
 
 if data.split() == lista_ack:
     LINE = 'ACK sip:' + RECEPTOR + '@' + IP + " " + VER
     print "Enviando: " + LINE
     my_socket.send(LINE + '\r\n')
     data2 = my_socket.recv(1024)
-    print data2
+    print "Recibido: " + data2
 print "Terminando socket..."
 
 
