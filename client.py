@@ -24,7 +24,7 @@ RECEPTOR = user_info[0]
 METODO = user_data[1]
 # Comprobamos si el método es conocido
 if METODO not in method_list:
-    print "Method error: Only can use 'INVITE' or 'BYE'"
+    print usage
     raise SystemExit
 
 # Dirección IP del servidor.
