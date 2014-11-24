@@ -56,9 +56,9 @@ except socket.error:
     raise SystemExit
 
 if data.split() == lista_ack:
-    LINE = 'ACK sip:' + RECEPTOR + '@' + IP + " " + VER
-    print "Enviando: " + LINE
-    my_socket.send(LINE + '\r\n')
+    LINE2 = 'ACK sip:' + RECEPTOR + '@' + IP + " " + VER
+    print "Enviando: " + LINE2
+    my_socket.send(LINE2 + '\r\n\r\n')
     data2 = my_socket.recv(1024)
     print "Recibido: " + data2
 print "Terminando socket..."
