@@ -27,7 +27,6 @@ except ValueError:
 
 AUDIO_FILE = server_data[3]
 if not os.path.exists(AUDIO_FILE):
-    print "Audio file doesn't exist"
     print usage
     raise SystemExit
 
