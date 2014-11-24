@@ -11,8 +11,8 @@ import sys
 # Cliente UDP simple.
 user_data = sys.argv
 method_list = ['INVITE', 'BYE']
-lista_ack = ['SIP/2.0', '100', 'Trying', 'SIP/2.0', '180', 'Ringing',
-             'SIP/2.0', '200', 'OK']
+lista_ack = ['SIP/2.0', '100', 'Trying', 'SIP/2.0', '180',
+             'Ringing', 'SIP/2.0', '200', 'OK']
 usage = "Usage: python client.py method receiver@IP:SIPport"
 if len(user_data) != 3:
     print usage
