@@ -47,9 +47,10 @@ my_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 my_socket.connect((IP, PORT))
 
 # Comprobamos si hay un servidor escuchando
-try:    
-    print "Enviando: " + LINE
-    my_socket.send(LINE + '\r\n')
+try:
+    LINE2 = 'INVITE pepe-batman@123.23.12.12 SIP/2.0'
+    print "Enviando: " + LINE2
+    my_socket.send(LINE2 + '\r\n')
     data = my_socket.recv(1024)
 except socket.error:
     print "Error: No server listening at " + IP + " port " + str(PORT)
