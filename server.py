@@ -18,6 +18,7 @@ if len(server_data) != 4:
     print usage
     raise SystemExit
 IP = server_data[1]
+print IP
 try:
     PORT = int(server_data[2])
 except ValueError:
@@ -77,7 +78,7 @@ class SIPHandler(SocketServer.DatagramRequestHandler):
                     self.wfile.write("SIP/2.0 200 OK\r\n\r\n")
                 elif list_words[0] == "ACK":
                     os.system('chmod 755 mp32rtp')
-                    to_exe = './mp32rtp -i 127.0.0.1 -p 23032 < ' + audio_file
+                    to_exe = './mp32rtp -i 127.0.0.1 -p 23032 < ' + AUDIO_FILE
                     print "Enviando audio..."
                     os.system(to_exe)
                 else:
