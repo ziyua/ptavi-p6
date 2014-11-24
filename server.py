@@ -4,7 +4,6 @@
 Clase (y programa principal) para un servidor de eco en UDP simple
 """
 
-# import random
 import SocketServer
 import sys
 import os
@@ -17,14 +16,12 @@ class EchoHandler(SocketServer.DatagramRequestHandler):
     """
     ALLOW = 'INVITE|ACK|BYE|CANCEL|OPTIONS|REGISTER'
     PROTOCOL = r'(' + ALLOW + ')\ssip:\w+@(\w+|\d+(\.\d+){3}):\d+\sSIP/2.0'
-    PORT_RTP = 23032  # random.randint(1024, 65535)
+    PORT_RTP = 23032
 
     def send_single(self, text):
         """
         Enviar información de inmediato.
         """
-        print 'Send -- ', text[:-4]
-        # send Tring Ring and ACK # Port sip: 5060
         self.socket.sendto(text, self.client_address)
 
     def handle(self):
@@ -43,29 +40,26 @@ class EchoHandler(SocketServer.DatagramRequestHandler):
                     # 180 Ring
                     self.send_single('SIP/2.0 180 Ringing\r\n\r\n')
                     # 200 OK
-                    print 'Send --  SIP/2.0 200 OK'
                     self.wfile.write('SIP/2.0 200 OK\r\n\r\n')
                 elif line.split()[0] == 'ACK':
-                    # RTP servidor 5010 --> client 12440 (random) en sip.cap
+                    # send RTP
                     ip = self.client_address[0]
+                    # mp3 to rtp
                     aEjecutar = './mp32rtp -i ' + ip + ' -p ' \
                                 + '23032 < ' + sys.argv[3]
-                    #           + str(self.PORT_RTP) + ' < ' + sys.argv[3]
                     print "Vamos a ejecutar $ ", aEjecutar
+                    # File Permissions
+                    os.system('chmod +x mp32rtp')
                     os.system(aEjecutar)
-                    print '-- Send end --'
-                    # Aqui serv va a send '' a client. [Malformed package]
+                    # Error!! serv va a send '' a client. [Malformed package]
                 elif line.split()[0] == 'BYE':
                     # Solo Send 200 OK
-                    print 'Send --  SIP/2.0 200 OK'
                     self.wfile.write('SIP/2.0 200 OK\r\n\r\n')
                 else:
                     # YES -> INVITE|ACK|BYE   NOT -> CANCEL|OPTIONS|REGISTER
-                    print 'Send --  SIP/2.0 405 Method Not Allowed'
                     self.wfile.write('SIP/2.0 405 Method Not Allowed\r\n\r\n')
             elif line:
                 # bad msg:
-                print 'Send --  SIP/2.0 400 Bad Request'
                 self.wfile.write('SIP/2.0 400 Bad Request\r\n\r\n')
             else:
                 break

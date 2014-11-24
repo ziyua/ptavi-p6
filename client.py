@@ -17,7 +17,6 @@ class SIPclient():
         """
         self.PROTOCOL = r'^SIP/2.0\s\d{3}\s\w+'
         self.User = User
-        # self.recvRTP = False
         self.Method = ''
         # Cliente UDP simple.
         self.my_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -51,6 +50,7 @@ class SIPclient():
         if mat is not None:
             Num = data.split()[1]
             if Num == "200":
+                # BYE, not send ACK
                 if self.Method != 'BYE':
                     self.sendSIP('ACK')
             else:
@@ -83,5 +83,4 @@ if __name__ == '__main__':
     mySIP.sendSIP(Method=sys.argv[1])
     mySIP.receiveSIP()
     # if RTP: print 'Starting receive RTP...'
-    # RTPserv = SocketServer.UDPServer(("", 23032), RTPhandle)
     mySIP.closeSIP()
