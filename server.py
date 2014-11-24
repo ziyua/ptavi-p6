@@ -41,11 +41,8 @@ class EchoHandler(SocketServer.DatagramRequestHandler):
                     # 100 Trying
                     self.send_single('SIP/2.0 100 Trying\r\n\r\n')
                     # 180 Ring
-                    self.send_single('SIP/2.0 180 Ring\r\n\r\n')
-                    # Send 200 OK, No hay port random. no need 'sdp'
-                    # sdp = 'm=audio ' + str(self.PORT_RTP) + \
-                    #       ' RTP/AVP 8 101\r\n'
-                    # self.send_single('SIP/2.0 200 OK\r\n' + sdp + '\r\n')
+                    self.send_single('SIP/2.0 180 Ringing\r\n\r\n')
+                    # 200 OK
                     print 'Send --  SIP/2.0 200 OK'
                     self.wfile.write('SIP/2.0 200 OK\r\n\r\n')
                 elif line.split()[0] == 'ACK':
