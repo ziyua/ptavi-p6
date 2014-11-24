@@ -10,23 +10,48 @@ import os
 import sys
 import socket
 
-SERVER_DATA = sys.argv
-if len(SERVER_DATA) != 4:
-    print "Usage: python server.py IP port audio_file"
+# Recopilamos datos de entrada y comprobamos errores
+usage = "Usage: python server.py IP port audio_file"
+server_data = sys.argv
+
+if len(server_data) != 4:
+    print usage
     raise SystemExit
-IP = SERVER_DATA[1]
+IP = server_data[1]
 try:
-    PORT = int(SERVER_DATA[2])
+    PORT = int(server_data[2])
 except ValueError:
-    print "Usage: python server.py IP port audio_file"
+    print usage
     raise SystemExit
 
-AUDIO_FILE = SERVER_DATA[3]
+audio_file = server_data[3]
+if not os.path.exists(audio_file):
+    print "Audio file doesn't exist"
+    print usage
+    raise SystemExit
 
+def check_request(lista):
+    # Comprueba si la petición recibida esta bien formada
+    lista_ok = [3, 'SIP/2.0', 'sip', 2]
+    lista_check = [0,1,2,3]
+    try:
+        lista_check[0] = len(lista)
+        lista_check[1] = lista[2]
+        user = lista[1].split(":")
+        lista_check[2] = user[0]
+        user_data = user[1].split('@')
+        lista_check[3] = len(user_data)
+        return lista_check == lista_ok
+    except IndexError:
+        print "500 Server Internal Error"
+        return 0
+
+            
 class SIPHandler(SocketServer.DatagramRequestHandler):
     """
     SIP server class
     """
+
 
     def handle(self):
 
@@ -35,19 +60,23 @@ class SIPHandler(SocketServer.DatagramRequestHandler):
             cadena = self.rfile.read()
             if cadena != "":
                 list_words = cadena.split()
-                print list_words
+                list_ok = check_request(list_words)
+                if not list_ok:
+                    self.wfile.write("SIP/2.0 406 Not Acceptable\r\n\r\n")
+                    print "Recibida petición incorrecta"
+                    break
                 if list_words[0] == 'INVITE':
                     correo = list_words[1]
                     correo = correo.split(":")[1]
                     resp = "SIP/2.0 100 Trying\r\n\r\n"
-                    resp = resp + "SIP/2.0 180 Ring\r\n\r\n"
+                    resp = resp + "SIP/2.0 180 Ringing\r\n\r\n"
                     resp = resp + "SIP/2.0 200 OK\r\n\r\n"
                     self.wfile.write(resp)
                 elif list_words[0] == 'BYE':
 					self.wfile.write("SIP/2.0 200 OK\r\n\r\n")
                 elif list_words[0] == "ACK":
                     os.system('chmod 755 mp32rtp')
-                    to_exe = './mp32rtp -i 127.0.0.1 -p 23032 < ' + AUDIO_FILE
+                    to_exe = './mp32rtp -i 127.0.0.1 -p 23032 < ' + audio_file
                     os.system(to_exe)
                 else:
 					self.wfile.write("SIP/2.0 405 Method Not Allowed\r\n\r\n")
