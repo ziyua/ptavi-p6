@@ -2,7 +2,7 @@
 # -*- coding: iso-8859-15 -*-
 #Practica 6 - Miguel Angel Fernandez Sanchez
 """
-Clase (y programa principal) para un servidor de eco en UDP simple
+Clase (y programa principal) para un servidor SIP
 """
 
 import SocketServer
