@@ -11,7 +11,7 @@ import sys
 # Cliente UDP simple.
 user_data = sys.argv
 method_list = ['INVITE', 'BYE']
-lista_ack = ['SIP/2.0', '100', 'Trying', 'SIP/2.0', '180', 'Ring',
+lista_ack = ['SIP/2.0', '100', 'Trying', 'SIP/2.0', '180', 'Ringing',
                  'SIP/2.0', '200', 'OK']
 
 if len(user_data) != 3:
@@ -32,7 +32,7 @@ if METODO not in method_list:
 IP = user_info[1].split(":")[0]
 try:
     PORT = int(user_info[1].split(":")[1])
-except TypeError:
+except ValueError:
     print "Usage: python client.py method receiver@IP:SIPport"
     raise SystemExit
 
@@ -48,9 +48,8 @@ my_socket.connect((IP, PORT))
 
 # Comprobamos si hay un servidor escuchando
 try:
-    LINE2 = 'INVITE pepe-batman@123.23.12.12 SIP/2.0'
-    print "Enviando: " + LINE2
-    my_socket.send(LINE2 + '\r\n')
+    print "Enviando: " + LINE
+    my_socket.send(LINE + '\r\n')
     data = my_socket.recv(1024)
 except socket.error:
     print "Error: No server listening at " + IP + " port " + str(PORT)
