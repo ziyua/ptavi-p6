@@ -18,13 +18,11 @@ if len(server_data) != 4:
     print usage
     raise SystemExit
 IP = server_data[1]
-
 try:
     PORT = int(server_data[2])
 except ValueError:
     print usage
     raise SystemExit
-
 AUDIO_FILE = server_data[3]
 if not os.path.exists(AUDIO_FILE):
     print usage
@@ -34,8 +32,9 @@ if not os.path.exists(AUDIO_FILE):
 def check_request(lista):
     # Comprueba si la petición recibida esta bien formada
     lista_ok = [3, 'SIP/2.0', 'sip', 2]
-    lista_check = [0, 1, 2, 3]
+    lista_check = ['', '', '', '']
     try:
+        # Relleno lista y comparo para saber si los datos son los esperados
         lista_check[0] = len(lista)
         lista_check[1] = lista[2]
         user = lista[1].split(":")
@@ -62,14 +61,14 @@ class SIPHandler(SocketServer.DatagramRequestHandler):
                 ip_client = str(self.client_address[0])
                 list_words = cadena.split()
                 list_ok = check_request(list_words)
+                # Si los datos no son correctos, mandamos mensaje de error
                 if not list_ok:
-                    self.wfile.write("SIP/2.0 406 Not Acceptable\r\n\r\n")
-                    print "Recibida petición incorrecta"
+                    self.wfile.write("SIP/2.0 400 Bad Request\r\n\r\n")
                     break
                 print 'Recibida petición: ' + cadena
+                # Gestionamos la peticion dependiendo del método
                 if list_words[0] == 'INVITE':
-                    correo = list_words[1]
-                    correo = correo.split(":")[1]
+                    correo = list_words[1].split(":")[1]
                     resp = "SIP/2.0 100 Trying\r\n\r\n"
                     resp = resp + "SIP/2.0 180 Ringing\r\n\r\n"
                     resp = resp + "SIP/2.0 200 OK\r\n\r\n"
@@ -96,5 +95,5 @@ if __name__ == "__main__":
         print "Listening..."
         serv.serve_forever()
     except socket.gaierror:
-        print "Usage: python server.py IP port audio_file"
+        print usage
         raise SystemExit
