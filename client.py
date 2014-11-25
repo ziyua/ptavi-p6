@@ -37,7 +37,7 @@ except ValueError:
     raise SystemExit
 
 # Contenido que vamos a enviar
-LINE = METODO + " sip:" + RECEPTOR + "@" + IP + " " + VER + '\r\n\r\n'
+LINE = METODO + " sip:" + RECEPTOR + "@" + IP + " " + VER + '\r\n'
 
 # Creamos el socket, lo configuramos y lo atamos a un servidor/puerto
 
