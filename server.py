@@ -18,12 +18,6 @@ class EchoHandler(SocketServer.DatagramRequestHandler):
     PROTOCOL = r'(' + ALLOW + ')\ssip:\w+@(\w+|\d+(\.\d+){3}):\d+\sSIP/2.0'
     PORT_RTP = 23032
 
-    def send_single(self, text):
-        """
-        Enviar información de inmediato.
-        """
-        self.socket.sendto(text, self.client_address)
-
     def handle(self):
         """
         Receive package and procesar
@@ -36,9 +30,9 @@ class EchoHandler(SocketServer.DatagramRequestHandler):
             if not m is None:
                 if line.split()[0] == 'INVITE':
                     # 100 Trying
-                    self.send_single('SIP/2.0 100 Trying\r\n\r\n')
+                    self.wfile.write('SIP/2.0 100 Trying\r\n\r\n')
                     # 180 Ring
-                    self.send_single('SIP/2.0 180 Ringing\r\n\r\n')
+                    self.wfile.write('SIP/2.0 180 Ringing\r\n\r\n')
                     # 200 OK
                     self.wfile.write('SIP/2.0 200 OK\r\n\r\n')
                 elif line.split()[0] == 'ACK':
