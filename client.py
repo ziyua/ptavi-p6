@@ -82,5 +82,6 @@ if __name__ == '__main__':
     # vamos a enviar (INVITE, jose@127.0.0.1:8000)
     mySIP.sendSIP(Method=sys.argv[1])
     mySIP.receiveSIP()
+    
     # if RTP: print 'Starting receive RTP...'
     mySIP.closeSIP()
